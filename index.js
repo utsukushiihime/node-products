@@ -72,9 +72,7 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf8");
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-    const pathname = req.url;
-
-    console.log(`Request for ${pathname} received.`);
+    const { query, pathname } = url.parse(req.url, true);
 
     // Overview Page
     if (pathname === "/overview" || pathname === "/") {
@@ -92,8 +90,11 @@ const server = http.createServer((req, res) => {
 
         // Product Page
     } else if (pathname === "/product") {
+        const product = dataObj[query.id];
+        const output = replaceTemplate(tempProduct, product);
+
         res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(`This is the PRODUCT`);
+        res.end(output);
 
         // API Page
     } else if (pathname === "/api") {
