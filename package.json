@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -11,13 +12,17 @@
     "url": "git+https://github.com/utsukushiihime/node-products.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Crystal McNeil",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/utsukushiihime/node-products/issues"
   },
   "homepage": "https://github.com/utsukushiihime/node-products#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "slugify": "^1.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
   }
 }
