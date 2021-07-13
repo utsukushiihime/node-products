@@ -39,6 +39,35 @@ const url = require("url");
 // SERVER
 
 // ANCHOR this is important info : it's okay to call synchronously since it's outside the callback function and in top-level code
+
+const replaceTemplate = (temp, product) => {
+    let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
+    output = output.replace(/{%IMAGE%}/g, product.image);
+    output = output.replace(/{%PRICE%}/g, product.price);
+    output = output.replace(/{%FROM%}/g, product.from);
+    output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
+    output = output.replace(/{%QUANTITY%}/g, product.quantity);
+    output = output.replace(/{%DESCRIPTION%}/g, product.description);
+    output = output.replace(/{%ID%}/g, product.id);
+
+    if (!product.organic)
+        output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+    return output;
+};
+
+const tempOverview = fs.readFileSync(
+    `${__dirname}/templates/template-overview.html`,
+    "utf8"
+);
+const tempCard = fs.readFileSync(
+    `${__dirname}/templates/template-card.html`,
+    "utf8"
+);
+const tempProduct = fs.readFileSync(
+    `${__dirname}/templates/template-product.html`,
+    "utf8"
+);
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf8");
 const dataObj = JSON.parse(data);
 
@@ -46,27 +75,32 @@ const server = http.createServer((req, res) => {
     const pathname = req.url;
 
     console.log(`Request for ${pathname} received.`);
-    if (pathname === "/overview") {
-        // Overview Page
 
+    // Overview Page
+    if (pathname === "/overview" || pathname === "/") {
         // must send headers before calling res.end() (RESPONSE)
-        res.writeHead(200, { "Content-Type": "text/plain" });
-        res.end(`This is the OVERVIEW!`);
-    } else if (pathname === "/product") {
+        res.writeHead(200, { "Content-Type": "text/html" });
+
+        const cardsHTML = dataObj
+            .map((el) => replaceTemplate(tempCard, el))
+            .join("");
+
+        const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHTML);
+        // console.log(cardsHTML);
+
+        res.end(output);
+
         // Product Page
-
-        res.writeHead(200, { "Content-Type": "text/plain" });
+    } else if (pathname === "/product") {
+        res.writeHead(200, { "Content-Type": "text/html" });
         res.end(`This is the PRODUCT`);
-    } else if (pathname === "/") {
-        // Home Page
 
-        res.writeHead(200, { "Content-Type": "text/plain" });
-        res.end(`This is the HOME page`);
-    } else if (pathname === "/api") {
         // API Page
-
+    } else if (pathname === "/api") {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(data);
+
+        // 404 Page
     } else {
         res.writeHead(404, { "Content-Type": "text/html" });
         res.end(`<h1>404 - Page not found.</h1>`);
