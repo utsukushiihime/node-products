@@ -2,7 +2,7 @@
 
 <!-- list of dependencies -->
 
-Get a list of products from template files.
+Gets and displays a list of products from template files.
 
 ### List of dependencies
 
